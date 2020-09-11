@@ -8,7 +8,6 @@ import copy
 X = "X"
 O = "O"
 EMPTY = None
-PLAYER = None
 
 
 def initial_state():
@@ -24,17 +23,21 @@ def player(board):
     """
     Returns player who has the next turn on a board.
     """
+    xCount = 0
+    oCount = 0
 
-    global PLAYER
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == X:
+                xCount += 1
+            elif board[i][j] == O:
+                oCount += 1
+    
+    if xCount == oCount:
+        return X
 
-    if PLAYER == None:
-        PLAYER = X
-    elif PLAYER == X:
-        PLAYER = O
     else:
-        PLAYER = X
-
-    return PLAYER
+        return O
     raise NotImplementedError
 
 
@@ -64,9 +67,9 @@ def result(board, action):
     if not result[action[0]][action[1]] == EMPTY:
         raise Exception("not a valid result")
 
-    if PLAYER == X:
+    if player(board) == X:
         result[action[0]][action[1]] = X
-    if PLAYER == O:
+    if player(board) == O:
         result[action[0]][action[1]] = O
 
     return result
@@ -136,18 +139,17 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-
     options = set()
     for action in actions(board):
-        if PLAYER == X:
+        if player(board) == X:
             value = maxvalue(board, action)
-        elif PLAYER == O:
+        elif player(board) == O:
             value = minvalue(board, action)
         options.add((action, value))
 
-    if PLAYER == X:
+    if player(board) == X:
         opMove = max(options, key = lambda i : i[1])[0]
-    elif PLAYER == O:
+    elif player(board) == O:
         opMove = min(options, key = lambda i : i[1])[0]
     return opMove
     raise NotImplementedError
