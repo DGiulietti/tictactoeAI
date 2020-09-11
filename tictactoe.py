@@ -9,7 +9,6 @@ X = "X"
 O = "O"
 EMPTY = None
 PLAYER = None
-WINNER = None
 
 
 def initial_state():
@@ -62,9 +61,6 @@ def result(board, action):
     print(action)
 
     result = copy.deepcopy(board)
-
-    # print(action)
-    # print("x")
     if not result[action[0]][action[1]] == EMPTY:
         raise Exception("not a valid result")
 
@@ -81,38 +77,29 @@ def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    global WINNER
     for i in range(3):
         if board[i][0] == board[i][1] and board[i][0] == board[i][2]:
             if board[i][0] == X:
-                WINNER = X
-                return WINNER
+                return X
             if board[i][0] == O:
-                WINNER = O
-                return WINNER
+                return O
         if board[0][i] == board[1][i] and board[0][i] == board[2][i]:
             if board[0][i] == X:
-                WINNER = X
-                return WINNER
+                return X
             if board[0][i] == O:
-                WINNER = O
-                return WINNER
+                return O
     if board[0][0] == board[1][1] and board[0][0] == board[2][2]:
         if board[0][0] == X:
-            WINNER = X
-            return WINNER
+            return X
         if board[0][0] == O:
-            WINNER = O
-            return WINNER
+            return O
     if board[0][2] == board[1][1] and board[0][2] == board[2][0]:
         if board[0][2] == X:
-            WINNER = X
-            return WINNER
+            return X
         if board[0][2] == O:
-            WINNER = O
-            return WINNER
+            return O
 
-    return WINNER
+    return None
 
     raise NotImplementedError
 
@@ -123,10 +110,10 @@ def terminal(board):
     """
 
     if not winner(board) == None:
-        print("Terminal resulted true")
+        # print("Terminal resulted true")
         return True
     if any(cell==EMPTY for (_, _, cell) in board) == False:
-        print("Terminal resulted true")
+        # print("Terminal resulted true")
         return True
 
     return False
@@ -137,9 +124,9 @@ def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    if WINNER == X:
+    if winner(board) == X:
         return 1
-    if WINNER == O:
+    elif winner(board) == O:
         return -1
     return 0
     raise NotImplementedError
