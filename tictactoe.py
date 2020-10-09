@@ -60,9 +60,6 @@ def result(board, action):
     """
     Returns the board that results from making move (i, j) on the board.
     """
-    print("result function")
-    print(action)
-
     result = copy.deepcopy(board)
     if not result[action[0]][action[1]] == EMPTY:
         raise Exception("not a valid result")
@@ -82,21 +79,25 @@ def winner(board):
     """
     for i in range(3):
         if board[i][0] == board[i][1] and board[i][0] == board[i][2]:
+            # print("win across")
             if board[i][0] == X:
                 return X
             if board[i][0] == O:
                 return O
         if board[0][i] == board[1][i] and board[0][i] == board[2][i]:
+            # print("win up and down")
             if board[0][i] == X:
                 return X
             if board[0][i] == O:
                 return O
     if board[0][0] == board[1][1] and board[0][0] == board[2][2]:
+        # print("win diagonal top to bot")
         if board[0][0] == X:
             return X
         if board[0][0] == O:
             return O
     if board[0][2] == board[1][1] and board[0][2] == board[2][0]:
+        # print("win diagonal bot to top")
         if board[0][2] == X:
             return X
         if board[0][2] == O:
@@ -113,13 +114,13 @@ def terminal(board):
     """
 
     if not winner(board) == None:
-        # print("Terminal resulted true")
         return True
-    if any(cell==EMPTY for (_, _, cell) in board) == False:
-        # print("Terminal resulted true")
-        return True
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == EMPTY:
+                return False 
 
-    return False
+    return True
     raise NotImplementedError
 
 
@@ -139,38 +140,41 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    options = set()
-    for action in actions(board):
-        if player(board) == X:
-            value = maxvalue(board, action)
-        elif player(board) == O:
-            value = minvalue(board, action)
-        options.add((action, value))
-
     if player(board) == X:
-        opMove = max(options, key = lambda i : i[1])[0]
-    elif player(board) == O:
-        opMove = min(options, key = lambda i : i[1])[0]
+        v = float('-inf')
+        for action in actions(board):
+            value = minvalue(board, action)
+            if v < value:
+                v = value
+                opMove = action
+
+    else:
+        v = float('inf')
+        for action in actions(board):
+            value = maxvalue(board, action)
+            if v > value:
+                v = value
+                opMove = action
+    
     return opMove
     raise NotImplementedError
 
 def maxvalue(board, action):
-    if terminal(board):
-        return utility(board)
     v = float('-inf')
     moveResult = result(board, action)
+    if terminal(moveResult):
+        return utility(moveResult)
     for nextAction in actions(moveResult):
         v = max(v, minvalue(moveResult, nextAction))
-    # print("maxvalue function")
-    # print(action)
+
     return v
     raise NotImplementedError
 
 def minvalue(board, action):
-    if terminal(board):
-        return utility(board)
     v = float('inf')
     moveResult = result(board, action)
+    if terminal(moveResult):
+        return utility(moveResult)
     for nextAction in actions(moveResult):
         v = min(v, maxvalue(moveResult, nextAction))
 
